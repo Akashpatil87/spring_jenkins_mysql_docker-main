@@ -19,7 +19,7 @@ pipeline {
         )
         string(
             name: 'DOCKERHUB_USERNAME',
-            defaultValue: 'karthikan123',
+            defaultValue: 'akashpatil007',
             description: 'DockerHub username'
         )
     }
@@ -35,7 +35,7 @@ pipeline {
             when { expression { params.ACTION == 'build' } }
             steps {
                 git branch: 'master',
-                    url: 'https://github.com/Ankarthik0011/SpringBoot_Project_deploy_using_Jenkins_Automation.git',
+                    url: 'https://github.com/Akashpatil87/spring_jenkins_mysql_docker-main.git',
                     credentialsId: 'github-creds'
             }
         }
@@ -52,7 +52,7 @@ pipeline {
             when { expression { params.ACTION == 'build' } }
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-3153',
+                    credentialsId: 'dockerhub-1234',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
