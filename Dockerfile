@@ -1,33 +1,33 @@
-version: "3.3"
+# Build stage
+#FROM maven:3.9.5-eclipse-temurin-17-focal AS build
+#WORKDIR /app
+#COPY pom.xml .
+#COPY src ./src
+#RUN mvn clean package -DskipTests
+# Runtime stage
+#FROM eclipse-temurin:17-jdk-focal
+#WORKDIR /app
+#COPY --from=build /app/target/*.jar app.jar
+#ENV SERVER_PORT=8080
+#EXPOSE ${SERVER_PORT}
+#ENTRYPOINT ["java", "-jar", "app.jar"]
 
-services:
-  db:
-    image: mysql:8.0
-    container_name: mysql-db
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: appdb
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppass
-    ports:
-      - "3307:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+# ---------- Build stage ----------
+FROM maven:3.9.5-eclipse-temurin-17 AS build
+WORKDIR /app
 
-  app:
-    image: karthikan123/spring_project2003:v1
-    container_name: springboot-app
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8085:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/appdb
-      SPRING_DATASOURCE_USERNAME: appuser
-      SPRING_DATASOURCE_PASSWORD: apppass
-    restart: always
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn clean package -DskipTests
+
+# ---------- Runtime stage ----------
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+ENV SERVER_PORT=8080
+EXPOSE 8080
+
+ENTRYPOINT ["java","-jar","app.jar"]
